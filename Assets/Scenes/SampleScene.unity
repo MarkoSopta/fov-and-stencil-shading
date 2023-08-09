@@ -1119,14 +1119,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1020039345}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 1.42, y: 1, z: 0.48}
+  m_LocalRotation: {x: -0.000018832501, y: 0.5424808, z: 0.000056450695, w: 0.84006816}
+  m_LocalPosition: {x: 1.29, y: 1, z: 0.48}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 4
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: -0.005, y: 65.705, z: 0.004}
 --- !u!54 &1020039350
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1166,6 +1166,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b774e51746a4de4e821666a8a36ef91, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 5
 --- !u!114 &1020039352
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1178,6 +1179,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e4c07a1c5fe24e143be1de6109516b88, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  viewRadius: 10
+  viewAngle: 90
+  targetMask:
+    serializedVersion: 2
+    m_Bits: 128
+  objectMask:
+    serializedVersion: 2
+    m_Bits: 64
+  visibleTargets: []
 --- !u!1 &1029412975
 GameObject:
   m_ObjectHideFlags: 0
