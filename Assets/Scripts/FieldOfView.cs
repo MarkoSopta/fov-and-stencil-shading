@@ -5,18 +5,26 @@ using UnityEngine;
 public class FieldOfView : MonoBehaviour
 {
     public float viewRadius;
-    [Range(0,360)]
+    [Range(0, 360)]
     public float viewAngle;
+
+    public float meshResolution;
+    public MeshFilter viewMeshFilter;
+    Mesh viewMesh;
 
     public LayerMask targetMask;
     public LayerMask objectMask;
-
+    [HideInInspector]
     public List<Transform> visibleTargets = new List<Transform>();
 
     void Start() {
-        StartCoroutine("FindTargets", .3f);
-    
-    
+
+        viewMesh = new Mesh();
+        viewMesh.name = "View Mesh";
+        viewMeshFilter.mesh = viewMesh;
+        StartCoroutine("FindTargets", .05f);
+
+
     }
 
 
@@ -27,7 +35,11 @@ public class FieldOfView : MonoBehaviour
             yield return new WaitForSeconds(delay);
             FindVisibleTargets();
         }
-    
+
+    }
+
+    void Update() {
+        DrawFOV();
     }
 
 
@@ -49,8 +61,59 @@ public class FieldOfView : MonoBehaviour
                 }
             }
         }
-    
+
     }
+
+    void DrawFOV()
+    {
+        int rayCount = Mathf.RoundToInt(viewAngle * meshResolution);
+        float rayAngleSize = viewAngle / rayCount;
+        List<Vector3> viewPoints = new List<Vector3>();
+
+        for (int i = 0; i < rayCount; i++)
+        {
+            float angle = transform.eulerAngles.y - viewAngle / 2 + rayAngleSize * i;
+            //Debug.DrawLine(transform.position, transform.position + DirectionFromAngle(angle,true) * viewRadius, Color.red);
+            ViewCastInfo newViewCast = viewCast(angle);
+            viewPoints.Add(newViewCast.point);
+        }
+
+        int vertexCount = viewPoints.Count + 1;
+        Vector3[] vertices = new Vector3[vertexCount];
+        int[] triangles = new int[(vertexCount - 2) * 3];
+        vertices[0] = Vector3.zero;
+        for (int i = 0; i < vertexCount - 1; i++)
+        {
+            vertices[i + 1] = viewPoints[i];
+
+            if (i < vertexCount - 2) {
+                triangles[i * 3] = 0;
+                triangles[i * 3 + 1] = i + 1;
+                triangles[i * 3 + 2] = i + 2;
+            }
+        }
+
+        viewMesh.Clear();
+        viewMesh.vertices = vertices;
+        viewMesh.triangles = triangles;
+        viewMesh.RecalculateNormals();
+    }
+
+    ViewCastInfo viewCast(float globalAngle) {
+        Vector3 direction = DirectionFromAngle(globalAngle, true);
+        RaycastHit hit;
+
+        if (Physics.Raycast(transform.position, direction, out hit, viewRadius, objectMask))
+        {
+
+            return new ViewCastInfo(true, hit.point, hit.distance, globalAngle);
+        }
+        else {
+            return new ViewCastInfo(false, transform.position + direction * viewRadius, viewRadius, globalAngle);
+        }
+    }
+
+
     
     public Vector3 DirectionFromAngle(float angleInDeg, bool angleIsGlobal) {
         if (!angleIsGlobal) {
@@ -58,4 +121,23 @@ public class FieldOfView : MonoBehaviour
         }
         return new Vector3(Mathf.Sin(angleInDeg * Mathf.Deg2Rad), 0, Mathf.Cos(angleInDeg * Mathf.Deg2Rad));
     }
+
+    public struct ViewCastInfo
+    {
+        public bool hit;
+        public Vector3 point;
+        public float distance;
+        public float angle;
+
+        public ViewCastInfo(bool _hit, Vector3 _point, float _distance, float _angle) {
+            hit = _hit;
+            point = _point;
+            distance = _distance;
+            angle = _angle;       
+        
+        }
+
+    }
+
+
 }
