@@ -38,7 +38,7 @@ public class FieldOfView : MonoBehaviour
 
     }
 
-    void Update() {
+    void LateUpdate() {
         DrawFOV();
     }
 
